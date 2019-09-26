@@ -1,0 +1,107 @@
+/*        Progam for face control of AIHRo
+        
+          A R&D Productions  by AIHRo group @ AIHRo workspce
+*/
+
+/*
+Pin 8 ==>
+pin 9 ==> Eye---myservo1
+Pin 10==> Lip---myservo2 (55 to 110)
+*/
+
+#include <Servo.h> 
+
+Servo myservo1,myservo2;
+
+const int pos1min=15;
+const int pos1max=50;
+
+const int pos2min=55;
+const int pos2max=110;
+
+int pos,pos1,pos2,val,timecount=0;
+long int time=0,timeprev=0;
+
+void setup()
+      {
+        Serial.begin(9600);
+        Serial.println("Starts");
+        pos1=pos1min;
+        pos2=pos2min;
+        
+        pinMode(8,INPUT);
+        myservo1.attach(9);
+        myservo2.attach(10);
+        eye();
+      }
+
+void loop()
+    {
+     val=digitalRead(8);
+     eye();
+     if(val==1)
+          {
+          Serial.println("  Lip movement Starts");
+          eye();
+          myservo2.write(55);               
+          delay(200);  
+          myservo2.write(110);
+          delay(200);
+          eye();
+          for(int i=0;i<10;i++)
+                {
+                eye();
+                pos=random(70,110);
+                myservo2.write(pos);
+                delay(200);
+                Serial.println("   Lip moved");
+                val=digitalRead(8);
+                if(val==0)
+                      {
+                      Serial.println("  Lip movement break");
+                      break;
+                      }
+                }
+          myservo2.write(55);
+          delay(500);
+          Serial.println("  Lip movement finish");
+          eye();
+          }
+      else   
+            {
+              eye();
+             myservo2.write(55);
+             delay(200);
+            }          
+      eye();
+    
+      }
+      
+      
+ void eye()
+       {
+        int timediff,randNum;
+        time=millis(); 
+        timediff=time-timeprev;
+        timecount+=timediff;
+        randNum=random(7,12);
+        randNum*=1000;
+        if(timecount>randNum)
+              {
+               for(int i=pos1min;i<pos1max;i+=10)  
+                   { 
+                   myservo1.write(i);              
+                   delay(100);
+                   }
+               for(int i=pos1max;i>=pos1min;i-=10)
+                    {
+                    myservo1.write(i);              
+                    delay(50);
+                    }  
+              Serial.println("Eye Blink");
+              timecount=0;
+              }
+         timeprev=millis();
+       }
+              
+        
