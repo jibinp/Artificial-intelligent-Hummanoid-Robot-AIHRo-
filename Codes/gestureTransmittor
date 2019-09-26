@@ -1,0 +1,188 @@
+#include "Wire.h"
+#include "I2Cdev.h"
+#include "MPU6050.h"
+#include <VirtualWire.h>
+
+
+MPU6050 accelgyro;
+//#define LED RED_LED
+
+
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+int s1,s2,s3,s4,flag=0;
+char dirn,dir,trandata[6];
+int start=0;  
+
+void setup() 
+   {
+    Wire.begin();
+    Serial.begin(9600);
+    
+    vw_setup(2000);
+    vw_set_tx_pin(10);
+    
+   pinMode(2, INPUT);   
+   pinMode(3, INPUT);
+   pinMode(8, INPUT);
+   pinMode(9, INPUT);
+   pinMode(19,OUTPUT);
+   
+   accelgyro.initialize();
+    if(accelgyro.testConnection())
+        {
+        digitalWrite(19,HIGH);    
+        } 
+   delay(1000);
+   digitalWrite(19,LOW);
+   delay(1000);
+    
+    }
+
+
+
+void loop() 
+    {
+    accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+    s1=digitalRead(2);
+    s2=digitalRead(3);
+    s3=digitalRead(8);
+    s4=digitalRead(9);
+        
+       
+    if((s1==HIGH)&&(s2==HIGH))
+        {
+           
+        
+         start=0;
+        trandata[0]='<';
+        trandata[1]='0';
+        trandata[2]='0';
+        trandata[3]='0';
+        trandata[4]='0';
+        trandata[5]='>';
+         transmit(trandata);
+         delay(5000);
+        }
+    else if((s1==HIGH)||(s2==HIGH)||(s3==HIGH))
+         {
+        
+          start++;
+         
+          swtchcheck();
+         }
+   
+    else if(start>0)
+        {
+         delay(100);
+         trandata[0]='<';
+         for(int y=1;y<5;y++)
+               trandata[y]='d';
+         trandata[5]='>';
+         transmit(trandata);
+        }
+        
+            
+    }   
+
+
+
+void swtchcheck()
+    {
+     if((s2==HIGH)&&(s3==HIGH))
+             {
+              trandata[0]='<';
+              trandata[1]='o';
+              trandata[2]=side();
+              trandata[3]='o';
+              trandata[4]='o';
+              trandata[5]='>';
+              transmit(trandata);
+             }
+     
+     else if(s1==HIGH)
+             {
+              trandata[0]='<';
+              trandata[1]='H';
+              trandata[2]=side();
+              trandata[3]=dirction();
+              trandata[4]='o';
+              trandata[5]='>';
+               transmit(trandata);
+             }
+       else if(s2==HIGH)
+             {
+              trandata[0]='<';
+              trandata[1]='L';
+              trandata[2]='o';
+              trandata[3]=dirction();
+              trandata[4]='o';
+              trandata[5]='>';
+               transmit(trandata);
+             }
+     else  if(s3==HIGH)
+             {
+              trandata[0]='<';
+              trandata[1]='o';
+              trandata[2]=side();
+              trandata[3]='o';
+              trandata[4]='1';
+              trandata[5]='>';
+              transmit(trandata);
+             }
+      else
+        {
+          digitalWrite(19,LOW);
+        }
+    }
+
+
+char dirction()
+  {
+     
+  if(ay<-10000)
+      dir='R';
+  if(ay>10000)
+      dir='L';
+  if(ax>10000)
+      dir='F';
+  if(ax<-10000)
+      dir='B';
+  if(az>10000)
+      dir='U';
+  if(az<-10000)
+      dir='D';
+  
+  return(dir);
+  }
+  
+  
+
+
+
+   
+char side()
+  {
+    s4=digitalRead(9);
+   if(s4==LOW)
+       return'L';
+   if(s4==HIGH)
+       return'R';
+  }    
+        
+  
+void transmit(char dat[6])
+    {
+        digitalWrite(19,HIGH);    
+        delay(1000);
+         
+     for(int i=0;i<6;i++)
+         {
+          char *msg2 =&dat[i];           
+          vw_send((uint8_t *)msg2, strlen(msg2));
+          vw_wait_tx();Serial.print(dat[i]);        
+         }        
+   digitalWrite(19,LOW);  
+        delay(1000);
+         
+  }
