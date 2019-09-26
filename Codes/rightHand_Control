@@ -23,38 +23,49 @@ const int pos33=160;     // servo motor3 ==> front/back servo
 int pos1 = pos11;    //Intial Position
 int pos2 = pos22;
 int pos3 = pos33;
-int deg,count=0,degadd,flag=0;
+int deg,count=0,degadd,flag=0,loopcnt=0;
 char data,degree,ch;// variable to store the servo position 
 
 void setup()
     {
-    Serial.begin(9600);
+     // pinMode(14, OUTPUT);
+  //    digitalWrite(LED, HIGH);
+      delay(100);
+      Serial.begin(9600);
+      delay(100);
+   //   digitalWrite(LED, LOW); 
       myservo2.attach(12);       //attach servo 2 (left-right servo) to pin 13
-      
       myservo3.attach(13);       //attach servo 3 (front-back servo) to pin 11
-      
-     myservo1.attach(11);       //attach servo 1 (up-down servo) to pin 12
-    
-     
-      reset();
- delay(100);
-      
+      myservo1.attach(11);       //attach servo 1 (up-down servo) to pin 12
+      delay(100);
     }
 
 void loop()
     {
-    deg=5; 
-      while(!Serial.available());
-   if(Serial.available())
+     if(loopcnt==0)
+   {  
+    myservo1.write(81);
+    myservo2.write(106);
+    myservo3.write(161);
+    delay(20);
+    myservo1.write(80);
+    myservo2.write(105);
+    myservo3.write(160);
+    delay(20);
+    
+   }
+   deg=5; 
+    if(Serial.available())
                {
+          loopcnt=1;
           data=Serial.read();
           delay(100);
-          // // Serial.println("");
-          // Serial.print("Data = ");
-         // // Serial.println(data);
+          Serial.println("");
+          Serial.print("Data = ");
+         Serial.println(data);
          process();
           }
-      // // Serial.println(">>>>>>>>>>>");
+      Serial.println(">>>>>>>>>>>");
 
     }
 
@@ -64,43 +75,43 @@ void process()
     //DOWNWARD
     if(data=='2')  
         {
-         // // Serial.println("DOWNWARD ");
+         Serial.println("DOWNWARD ");
                 
-         // Serial.print("Current Position = ");
-         // // Serial.println(pos1);
+         Serial.print("Current Position = ");
+         Serial.println(pos1);
         
         pos1=servo(1,pos1,2,45);
         
-        // Serial.print("New Position = ");
-        // // Serial.println(pos1);
+        Serial.print("New Position = ");
+        Serial.println(pos1);
         }  
      
      //UPWARD 
      else if(data=='1')  
         {
-         // // Serial.println("UPWARD ");
+         Serial.println("UPWARD ");
                 
-         // Serial.print("Current Position = ");
-         // // Serial.println(pos1);
+         Serial.print("Current Position = ");
+         Serial.println(pos1);
         
         pos1=servo(1,pos1,1,180);
         
-        // Serial.print("New Position = ");
-        // // Serial.println(pos1);
+        Serial.print("New Position = ");
+        Serial.println(pos1);
         }  
      
      //LEFT
     else if(data=='3')  
        {         
-         // // Serial.println("LEFT ");
+         Serial.println("LEFT ");
                 
-         // Serial.print("Current Position = ");
-         // // Serial.println(pos2);
+         Serial.print("Current Position = ");
+         Serial.println(pos2);
         
         pos2=servo(2,pos2,1,145);
         
-        // Serial.print("New Position = ");
-        // // Serial.println(pos2);
+        Serial.print("New Position = ");
+        Serial.println(pos2);
         }  
      
      //RIGHT 
@@ -115,52 +126,52 @@ void process()
             else if(pos3<105)
               return;
          
-         // // Serial.println(limt); 
-         // // Serial.println("RIGHT ");
+         Serial.println(limt); 
+         Serial.println("RIGHT ");
 
-         // Serial.print("Current Position = ");
-         // // Serial.println(pos2);
+         Serial.print("Current Position = ");
+         Serial.println(pos2);
         
         pos2=servo(2,pos2,2,limt);
         
-        // Serial.print("New Position = ");
-        // // Serial.println(pos2);
+        Serial.print("New Position = ");
+        Serial.println(pos2);
         }  
      
       
       //Forward
     else if(data=='5')  
              {
-             // // Serial.println("FORWARD ");
+             Serial.println("FORWARD ");
                     
-             // Serial.print("Current Position = ");
-             // // Serial.println(pos3);
+             Serial.print("Current Position = ");
+             Serial.println(pos3);
             
             pos3=servo(3,pos3,2,80);
             
-            // Serial.print("New Position = ");
-            // // Serial.println(pos3);
+            Serial.print("New Position = ");
+            Serial.println(pos3);
             }  
           
      // BACKWARD
      else if(data=='6')  
         {
-         // // Serial.println("BACKWARD ");
+         Serial.println("BACKWARD ");
                 
-         // Serial.print("Current Position = ");
-         // // Serial.println(pos3);
+         Serial.print("Current Position = ");
+         Serial.println(pos3);
         
         pos3=servo(3,pos3,1,180);
         
-        // Serial.print("New Position = ");
-        // // Serial.println(pos3);
+        Serial.print("New Position = ");
+        Serial.println(pos3);
         }  
       
       else if(data=='q')
          { 
           reset();
          }
-//     else // // Serial.println("Unwanted"); 
+     else Serial.println("Unwanted"); 
       
     }  
     
@@ -168,109 +179,109 @@ void process()
 void reset()
     {
       int posi;
-      // // Serial.println("Resetting....");
+      Serial.println("Resetting....");
       
                   if(pos1<pos11)
                       {
-                      for(posi=pos1; posi <=pos11; posi += 2)  
+                      for(posi=pos1; posi <=pos11; posi += 1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo1.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo1.write(pos11); 
                    delay(2000);
-                   // Serial.print("Position (1) = ");
-                    // // Serial.println(pos11);
+                   Serial.print("Position (1) = ");
+                    Serial.println(pos11);
                       }
                   
                   else if(pos1>pos11)
                       {
-                      for(posi=pos1; posi >=pos11; posi -= 2)  
+                      for(posi=pos1; posi >=pos11; posi -= 1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo1.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo1.write(pos11); 
                    delay(2000);
-                   // Serial.print("Position (1) = ");
-                    // // Serial.println(pos11);
+                   Serial.print("Position (1) = ");
+                    Serial.println(pos11);
                       }    
            
              
                   if(pos2<pos22)
                       {
-                      for(posi=pos2; posi <=pos22; posi += 2)  
+                      for(posi=pos2; posi <=pos22; posi += 1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo2.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo2.write(pos22); 
                    delay(2000);
-                   // Serial.print("Position (2) = ");
-                    // // Serial.println(pos22);
+                   Serial.print("Position (2) = ");
+                    Serial.println(pos22);
                       }
                   
                   else if(pos2>pos22)
                       {
-                      for(posi=pos2; posi >=pos22; posi -= 2)  
+                      for(posi=pos2; posi >=pos22; posi -= 1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo2.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo2.write(pos22); 
                    delay(2000);
-                   // Serial.print("Position (2) = ");
-                    // // Serial.println(pos22);
+                   Serial.print("Position (2) = ");
+                    Serial.println(pos22);
                       }    
            
            
            
                   if(pos3<pos33)
                       {
-                      for(posi=pos3; posi <=pos33; posi += 2)  
+                      for(posi=pos3; posi <=pos33; posi += 1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo3.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo3.write(pos33); 
                    delay(2000);
-                   // Serial.print("Position (3) = ");
-                    // // Serial.println(pos33);
+                   Serial.print("Position (3) = ");
+                    Serial.println(pos33);
                       }
                   
                   else if(pos3>pos33)
                       {
-                      for(posi=pos3; posi >=pos33; posi -= 2)  
+                      for(posi=pos3; posi >=pos33; posi -=1)  
                           { 
-                            // Serial.print("pos = ");
-                            // // Serial.println(posi);                  
+                            Serial.print("pos = ");
+                            Serial.println(posi);                  
                             myservo3.write(posi);              
-                            delay(50);                       
+                            delay(18);                       
                           } 
                   myservo3.write(pos33); 
                    delay(2000);
-                   // Serial.print("Position (3) = ");
-                    // // Serial.println(pos33);
+                   Serial.print("Position (3) = ");
+                    Serial.println(pos33);
                       }    
            
              flag=0;
             count=0;
-          // // Serial.println("Finishing...");       
+          Serial.println("Finishing...");       
         
              pos1 = pos11;    //Intial Position
              pos2 = pos22;
              pos3 = pos33; 
-             // // Serial.println("");
+             Serial.println("");
         }       
    
    
@@ -283,7 +294,7 @@ int servo(int mtr,int pos,int sgn,int lmt)
                               { 
                               
                             /*    ch=Serial.read();
-                              // // Serial.println(ch);
+                              Serial.println(ch);
                               if(ch=='q')
                                   flag=1;
                           */    
@@ -293,8 +304,8 @@ int servo(int mtr,int pos,int sgn,int lmt)
                                       degadd=0;
                                       break;
                                       }
-                              // Serial.print("pos = ");
-                              // // Serial.println(pi);  
+                              Serial.print("pos = ");
+                              Serial.println(pi);  
                               
                               if(mtr==1)          
                                   myservo1.write(pi);    
@@ -303,7 +314,7 @@ int servo(int mtr,int pos,int sgn,int lmt)
                               else if(mtr==3)          
                                   myservo3.write(pi);  
                                   
-                              delay(50);  
+                              delay(18);  
                               }
                        ret=pi-1;
                       }    
@@ -314,7 +325,7 @@ int servo(int mtr,int pos,int sgn,int lmt)
                             { 
                               
                             /*  ch=Serial.read();
-                              // // Serial.println(ch);
+                              Serial.println(ch);
                               if(ch=='q')
                                   flag=1;
                               */
@@ -325,8 +336,8 @@ int servo(int mtr,int pos,int sgn,int lmt)
                                     degadd=0;
                                     break;
                                     }
-                            // Serial.print("pos = ");
-                            // // Serial.println(pi);            
+                            Serial.print("pos = ");
+                            Serial.println(pi);            
                             
                             if(mtr==1)          
                                 myservo1.write(pi);    
@@ -335,7 +346,7 @@ int servo(int mtr,int pos,int sgn,int lmt)
                             else if(mtr==3)          
                                 myservo3.write(pi);   
                                 
-                            delay(50);  
+                            delay(18);  
                             }
                    ret=pi+1;
                     }        
