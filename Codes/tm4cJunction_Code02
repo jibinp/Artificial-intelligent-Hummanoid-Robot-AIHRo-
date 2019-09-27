@@ -1,0 +1,104 @@
+/*
+
+          Program to interface TM4C1294-XL Junction-1 in Artificial Intelligent Robot  
+          Created by AIHRo Group @ AIHRo Workspace
+          R&D Productions
+
+*/
+#define LED GREEN_LED
+
+char data[5],cy;
+
+
+void setup()
+  {
+   Serial3.begin(9600); //Bluetooth
+   Serial7.begin(9600); //Gesture
+   Serial.begin(9600); 
+   
+   pinMode(LED, OUTPUT);
+   digitalWrite(LED,HIGH);
+   delay(1000);
+   digitalWrite(LED,LOW);
+  }
+  
+  
+  
+  
+  
+void loop()
+  {
+  
+   if(Serial3.available())
+                 {               
+                 digitalWrite(LED,HIGH);
+                 while (Serial3.available())
+                         {  
+                         cy = Serial3.read();
+                            delay(10);
+                         Serial.print(cy);
+                         }
+                  digitalWrite(LED,LOW);
+                  Serial.print("\n");
+                  }  
+    
+ 
+  if(Serial7.available())
+      {
+      digitalWrite(LED,HIGH);
+      char code=Serial7.read();
+             for(int i=0;i<4;i++)
+               {
+               data[i]=Serial7.read();
+               delay(10);
+               }
+       
+        code=Serial7.read();
+       if(code=='>')  
+           data[4]='\0';
+      if(data[0]=='2')
+            leg();
+      else if(data[0]=='1')
+            hand();
+      else if(data[0]=='8')
+            finger();
+      digitalWrite(LED,LOW);
+       }     
+      
+   }    
+         
+         
+  void leg()
+      {
+      if(data[2]=='3')
+            Serial.println("lft");
+       else if(data[2]=='4')
+             Serial.println("ryt");
+       else if(data[2]=='5')
+             Serial.println("frwrt");
+       else if(data[2]=='6')
+             Serial.println("bckwrd");
+      }
+  void hand()
+      {
+      if(data[2]=='1')
+             Serial.println("uap");
+      else if(data[2]=='2')
+             Serial.println("dwn");
+      else if(data[2]=='3')
+             Serial.println("lftu");
+      else if(data[2]=='4')
+             Serial.println("rght");
+      else if(data[2]=='5')
+             Serial.println("frnt");
+      else if(data[2]=='6')
+             Serial.println("bck");
+      }
+      
+  void finger()
+      {
+      if(data[3]=='8')
+             Serial.println("fno");
+       else if(data[3]=='1')
+             Serial.println("fnc");
+      }
