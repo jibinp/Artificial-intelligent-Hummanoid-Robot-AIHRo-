@@ -1,0 +1,778 @@
+/*
+codes : 
+  k--After booting
+  p--Processing
+ ps
+
+*/
+
+#include <UTFT.h>
+#include <dht.h>
+#include <string.h>
+
+
+UTFT myGLCD(NIC35WS,38,39,40,41); 
+
+#define dht_dpin A0 
+
+int tempval;
+dht DHT;
+String code="";
+char talk[500],kywrd[500],resp[500];
+extern uint8_t SmallFont[];
+extern uint8_t BigFont[];
+extern uint8_t SevenSegNumFont[];
+
+int fsr=148,fsg=10,fsb=24,loc=200,flag1=0,cnt=0;
+
+int i=0,sec=0,mint=0,hr=0,milsec=0,timenow,cntloop=0;
+int sec1=0,sec2=0,mint1=0,mint2=0,milsec1=0,milsec2=0,milsec3=0,milsec4=0;         
+long time1=0,time2,timedif;
+        
+
+boolean stringComplete = false;        
+
+void setup()
+      {
+        randomSeed(analogRead(0));
+        myGLCD.InitLCD();
+        Serial.begin(57600);
+       Serial.println("Start"); 
+       Serial.println(millis());
+        
+        myGLCD.setFont(BigFont);
+        myGLCD.fillScr(fsr,fsg,fsb);
+        myGLCD.setBackColor(fsr, fsg, fsb);
+        
+     //   introduction();
+      //  start();
+        myGLCD.fillScr(fsr,fsg,fsb);
+        
+        myGLCD.setFont(BigFont);
+        myGLCD.print("Temp °C",RIGHT,0);
+        myGLCD.print("Hum   %",RIGHT,20); 
+        myGLCD.setFont(SmallFont);
+        myGLCD.print("AIHRo Group",RIGHT,225);
+        myGLCD.setFont(BigFont);
+       }
+
+void loop()
+          { 
+            temp();
+           timenow=millis();
+           while(!Serial.available())
+                 {
+              // if(millis()-timenow>10000)
+                //     screensaver();
+                 temp();
+                 }
+            if(Serial.available()) 
+             {
+                while(Serial.available()) 
+               code=Serial.readString();
+             delay(20);
+             }
+                
+          if((code=="&p")||(code=="p"))
+              process();
+          else if((code=="ps")||(code=="ps"))
+              myGLCD.print("                            ",CENTER,120);
+          
+          else if((code=="&keyt")||(code=="keyt"))
+              {
+              myGLCD.setColor(fsr,fsg,fsb);
+              myGLCD.fillRect(0,45,400,loc);
+              myGLCD.setColor(255,255,255);
+             
+              loc=50;
+              myGLCD.print("TASKS",CENTER,loc);
+              myGLCD.drawLine(155,68,245,68);
+              loc+=21;
+              keyword();
+              code="AIHRo";
+              }
+          else if((code=="&ct")||(code=="ct"))
+              {
+              
+              myGLCD.setColor(fsr,fsg,fsb);
+              myGLCD.fillRect(0,45,400,220);
+              myGLCD.setColor(255,255,255);
+              loc=50;
+              causaltalk();
+              code="AIHRo";
+              }
+         
+          else if((code=="&seqrec")||(code=="seqrec"))
+              {
+               myGLCD.setColor(fsr,fsg,fsb);
+               myGLCD.fillRect(0,45,400,220);
+               myGLCD.setColor(255,255,255);
+               code="AIHRo";
+               myGLCD.print(" Task Recording...",LEFT,190);
+               seqrecord();            
+               }
+          else if((code=="&seqexe")||(code=="seqexe"))
+              {
+               myGLCD.setColor(fsr,fsg,fsb);
+               myGLCD.fillRect(0,45,400,220);
+               myGLCD.setColor(255,255,255);
+               code="AIHRo";
+               myGLCD.print(" Task Executing...",LEFT,190);
+               seqexecute();            
+              myGLCD.setFont(BigFont);
+              myGLCD.setColor(255,255,255);
+              myGLCD.print(" Task Completed   ",LEFT,190);
+              loc=210;
+               }
+           else if((code=="&intro")||(code=="intro"))
+               {
+                myGLCD.setColor(fsr,fsg,fsb);
+               myGLCD.fillRect(0,45,400,220);
+               myGLCD.setColor(255,255,255);
+                 code="AIHRo";
+               intro1();  
+             while(!Serial.available());  
+              myGLCD.setFont(BigFont);
+              myGLCD.print("Temp °C",RIGHT,0);
+              myGLCD.print("Hum   %",RIGHT,20); 
+              myGLCD.setFont(SmallFont);
+              myGLCD.print("AIHRo Group",RIGHT,225);
+              myGLCD.setFont(BigFont);
+                   
+             }
+           else if((code=="&res")||(code=="res"))
+              {
+               myGLCD.print("                            ",CENTER,120);
+               loc+=20;
+               causalresp();
+              }
+        }
+
+
+
+
+void temp()  
+      {
+         DHT.read11(dht_dpin);
+         delay(800);
+         myGLCD.setFont(BigFont);
+         myGLCD.setColor(255,255,255);
+         int tem=DHT.temperature;
+         int hum=DHT.humidity;
+         myGLCD.printNumI(tem,345,0);
+         myGLCD.printNumI(hum,345,20);
+      }
+      
+      
+      
+void start()
+      {
+        myGLCD.setBackColor(fsr, fsg, fsb);
+         myGLCD.fillScr(fsr, fsg, fsb);
+          myGLCD.setFont(BigFont);
+           myGLCD.print("AIHRO", CENTER, 110);
+            myGLCD.setFont(SmallFont);
+             myGLCD.print("Artificial Intelligent Humanoid Robot", CENTER, 128);
+             delay(1000);
+             myGLCD.drawRect(88, 155, 302, 170);
+              for (int i=90;i<301;i++)
+                 {
+                 if(i%9==0)
+                     delay(1000);
+                 if((i%5==0)||(i%15==0))
+                     delay(700);
+                 myGLCD.setColor(255, 255, 255);
+                 myGLCD.drawLine(i, 157, i, 168);
+                 myGLCD.setColor(255, 255, 255);
+                 myGLCD.setFont(SmallFont);
+                 myGLCD.print("Booting...   %", CENTER,180);
+                 myGLCD.printNumI(i/3, 225, 180);
+                 delay(10);
+                 if(Serial.available())
+                  if(Serial.read()=='k')
+                      break;
+                   
+                 }
+            for (int i=90;i<301;i++)
+                 {
+                  myGLCD.setColor(255, 255, 255);
+                 myGLCD.drawLine(i, 157, i, 168);
+                 }
+             delay(1000);
+             myGLCD.setColor(fsr, fsg, fsb);
+             myGLCD.fillRect(90, 180, 300, 225);
+             myGLCD.setColor(255, 255, 255);
+             myGLCD.print("Booting completed", CENTER,180);
+
+            delay(4000);          
+         }
+
+      
+   
+ 
+       
+   void procircle(int xp,int yp)
+       {
+        for(int r=0;r<13;r++)
+            {
+              myGLCD.setColor(255,255,255);
+             myGLCD.drawCircle(xp,yp,r);
+             for(int rr=0;rr<r-3;rr++)
+             {
+               myGLCD.setColor(199,30,30);
+             myGLCD.drawCircle(xp,yp,rr);
+             }
+             
+             delay(r*2);
+            }
+         
+        for(int r=13;r>0;r--)
+            {
+             myGLCD.setColor(fsr,fsg,fsb);
+             myGLCD.drawCircle(xp,yp,r);
+             for(int rr=r-3;rr>r-6;rr--)
+             {
+                myGLCD.setColor(255,255,255);
+             myGLCD.drawCircle(xp,yp,rr);
+             }
+             delay(r*2);
+            }
+       }
+       
+       
+       
+void process()
+         {          
+       startprocess:   myGLCD.setFont(BigFont);
+          myGLCD.setColor(fsr,fsg,fsb);
+          myGLCD.fillRect(280,120,310,140);
+          myGLCD.setColor(255,255,255);
+          myGLCD.print("Processing",CENTER,120);
+          //procircle(200,155);
+          for(int proc=280;proc<300;proc+=6)
+              {
+              myGLCD.setColor(255,255,255);
+              myGLCD.fillCircle(proc,133,1.5);
+              temp();
+              }
+          if(!Serial.available())
+              goto startprocess;
+           }  
+        
+       
+  
+ void seqrecord()
+         {
+         int i=0,j=0;
+   startq:      delay(100);
+            myGLCD.setFont(BigFont);
+            myGLCD.setColor(20,255,10);
+            for(i;;)
+                      {
+                       myGLCD.print("█",100,100,i);
+                      if(Serial.available())
+                          break;
+                       else i+=15;
+                     
+                      }
+          int pos=180;
+              
+                myGLCD.setColor(fsr,fsg,fsb);
+              myGLCD.fillRect(149,45,400,150);
+            
+          while(Serial.available())
+               {  
+                myGLCD.setColor(255,255,255);
+                 
+             //  for(int seqi=0;seqi<4;seqi++)
+                     {
+                      char seqch=Serial.read();
+                      if(seqch=='&')
+                      return;
+                     if(seqch=='%')
+                           return;
+                     if(seqch=='9')
+                         {
+                          myGLCD.setFont(BigFont);
+                          myGLCD.print("WAIT        ",RIGHT,120);
+                         }
+                     else if(seqch=='r')
+                         {
+                          myGLCD.setFont(SevenSegNumFont);
+                          myGLCD.printNumI(2030,pos,100);
+                         }
+                     else if(seqch=='l')
+                         {
+                          myGLCD.setFont(SevenSegNumFont);
+                          myGLCD.printNumI(2040,pos,100);
+                         }
+                      else if(seqch=='f')
+                         {
+                          myGLCD.setFont(SevenSegNumFont);
+                          myGLCD.printNumI(2050,pos,100);
+                         }
+                      else if(seqch=='b')
+                         {
+                          myGLCD.setFont(SevenSegNumFont);
+                          myGLCD.printNumI(2060,pos,100);
+                         }
+                         
+                       else 
+                       {
+                      int seqnum=seqch-48;
+                      myGLCD.setFont(SevenSegNumFont);
+                      myGLCD.printNumI(seqnum,pos,100);
+                      pos+=30;
+                           }
+                  /*    else if((seqch=='1')||(seqch=='2')||(seqch=='3')||(seqch=='4')||(seqch=='5')||(seqch=='6')||(seqch=='7')||(seqch=='8')||(seqch=='0'))
+                           {
+                      int seqnum=seqch-48;
+                      myGLCD.setFont(SevenSegNumFont);
+                      myGLCD.printNumI(seqnum,pos,100);
+                      pos+=30;
+                           }
+                  */
+                     }
+           }
+        goto startq;   
+         }
+        
+  
+ void charcircle()
+       {
+        myGLCD.setColor(20,255,10);
+            for(int j=0;;j++)
+                {
+                  for(int i=0;i<360;i+=10)
+                      {
+                       myGLCD.print("▌",100,100,i);
+                       while(Serial.available())
+                             break;
+                      }
+                   break;
+                }
+       }
+       
+       
+       
+       
+       
+     
+  
+    
+  void causaltalk()
+        {
+          char talk0[500];
+     
+         myGLCD.setFont(BigFont);       
+         while(!Serial.available());      
+         int i=0;
+         while (Serial.available())
+                  {
+                    talk[i] = Serial.read();
+                  delay(20);
+                  if(talk[i]=='&')
+                  return;
+                  Serial.print(talk[i]);
+                  delay(20);
+                  i++;   
+                 } 
+            for(int asdj=i;asdj<500;asdj++)
+                 talk[asdj]='\0';
+            Serial.println("");
+         for(int j=0;talk[j]!='\0';)
+                {
+                 for(int k=0;k<25;k++)
+                     {               
+                    talk0[k]=talk[j];
+                    j++;
+                     }
+                  talk0[26]='\0';
+                  myGLCD.print(talk0,LEFT,loc); 
+                 loc+=18;
+                  delay(10);
+                }
+                  
+       delay(10);
+        }
+        
+        
+        
+ 
+ void causalresp()
+        {
+          char resp0[500];
+          myGLCD.setFont(BigFont);       
+         while(!Serial.available());      
+         int i=0;
+         while (Serial.available())
+                  {
+                   resp[i] = Serial.read();
+                  if(resp[i]=='&')
+                  return;
+                  delay(20);
+                  Serial.print(resp[i]);
+                  delay(20);
+                  i++;   
+                 } 
+            for(int asdj=i;asdj<500;asdj++)
+                 resp[asdj]='\0';
+          Serial.println("");
+         for(int j=0;resp[j]!='\0';)
+                {
+                 for(int k=0;k<25;k++)
+                     {               
+                    resp0[k]=resp[j];
+                    j++;
+                     }
+                  resp0[26]='\0';
+                  myGLCD.print(resp0,LEFT,loc); 
+                 loc+=18;
+                  delay(10);
+                }
+                  
+       delay(10);
+        }
+        
+        
+        
+   
+        
+  
+  void keyword()
+        {
+          
+          int k=3,finish=0,cntsnd=0;
+          char kywrd1[500],kywrds[500];
+          cnt=0;
+         myGLCD.setFont(BigFont);       
+    start:     while(!Serial.available());      
+     if(Serial.read()=='&')
+                  return;
+         int kyi;
+         for(kyi=0;kyi<50;kyi++)
+                 {
+                  char kych = Serial.read();
+                  delay(20);
+                  if(kych=='%')
+                      {
+                       finish=1;
+                        k=3;
+                       break;
+                      }
+                  else if(kych=='!')
+                      {
+                      cntsnd++;
+                      k=3;
+                     Serial.print(cntsnd);
+                      kywrdprint(cntsnd);
+                      }
+                  else 
+                       {
+                      kywrd[k]=kych;
+                       k++;
+                       }
+                  delay(20);
+                 } 
+           if(finish==1)
+               {
+                 finish=0;
+                 Serial.println("");
+                 return;
+               }
+           else goto start;
+           kywrd[kyi]='\0';
+    
+          
+          }
+      
+       
+void kywrdprint(int countk)
+         {
+         int count1,count2,count0,j,count=0;
+         cnt++;
+                                      
+                                        if(countk<10)
+                                             {
+                                              kywrd[0]=48;
+                                              kywrd[1]=countk+48;
+                                              kywrd[2]='.';
+                                             }
+                                        else if(countk<100)
+                                             {
+                                              count1=countk%10;
+                                              count0=countk/10;
+                                              kywrd[0]=count0+48;
+                                              kywrd[1]=count1+48;
+                                              kywrd[2]='.';
+                                             }
+                                /// printing
+                                           if(cnt==8)
+                                                  {
+                                                   myGLCD.print(kywrd,LEFT,loc);
+                                                  delay(5000);
+                                                   myGLCD.setColor(fsr,fsg,fsb);
+                                                   myGLCD.fillRect(0,70,400,loc+15);
+                                                   myGLCD.setColor(255,255,255);
+                                                  loc=71; 
+                                                  cnt=0;
+                                                  }
+                                            else  
+                                                  {
+                                                   myGLCD.print(kywrd,LEFT,loc);
+                                                   loc+=18;
+                                                  }
+                                            delay(10);
+                                 ///Printing finish   
+          }
+
+
+void seqexecute()
+         {
+          delay(100);
+            myGLCD.print("                 :",LEFT,120);
+              
+            myGLCD.setFont(BigFont);
+            myGLCD.setColor(20,255,10);
+            time1=millis();
+            for(i;;)
+                      {
+                       myGLCD.setFont(BigFont);
+                       myGLCD.print("█",120,100,i);
+                       
+                       time2=millis();
+       int timedif1=time2-time1;
+       timedif+=timedif1;
+      timedif*=1.4;
+       if(timedif>1000)
+           {
+             sec++;
+               timedif=0;
+           }
+      if(sec<=60)
+           {           
+           if(sec<10)
+               {
+               sec1=0;
+               sec2=sec;
+               }
+           else if(sec<60)
+               {
+               sec1=sec/10;
+               sec2=sec%10;
+               }
+           else 
+             {
+               mint++;
+               sec=0;
+             }
+           }
+      
+      if(mint<10)
+           {
+           mint1=0;
+           mint2=mint;
+           }
+       else if(mint<60)
+           {
+           mint1=mint/10;
+           mint2=mint%10;
+           }
+        int pos=200;
+       myGLCD.setFont(SevenSegNumFont);
+      myGLCD.printNumI(mint1,pos,100);
+      myGLCD.printNumI(mint2,pos+30,100);
+     
+      myGLCD.printNumI(sec1,pos+90,100);
+      myGLCD.printNumI(sec2,pos+120,100);
+    
+     
+                                           
+                      if(Serial.available())
+                          return;
+                       else i+=15;    
+     time1=millis();                 
+                      }       
+              }        
+              
+  
+      
+
+ void seqexecute1()
+         {
+          delay(100);
+            myGLCD.print("           :    :",LEFT,120);
+              
+            myGLCD.setFont(BigFont);
+            myGLCD.setColor(20,255,10);
+            time1=millis();
+            for(i;;)
+                      {
+                       myGLCD.setFont(BigFont);
+                       myGLCD.print("█",55,80,i);
+                       
+                       time2=millis();
+       int timedif1=time2-time1;
+       timedif+=timedif1;
+       timedif*=1.4;
+       if(timedif<=2000)
+           {
+           if(timedif<10)
+                {
+                milsec1=0;
+                milsec2=0;
+                milsec3=0;
+                milsec4=timedif;
+                }
+            else if(timedif<100)
+                {
+                milsec1=0;
+                milsec2=0;
+                milsec3=timedif/10;
+                milsec4=timedif%10;
+                }
+             else if(timedif<1000)
+                {
+                milsec1=0;
+                milsec2=timedif/100;
+                milsec3=milsec2/10;
+                milsec4=timedif%10;
+                }
+              else 
+              {
+               sec++;
+               timedif=0;
+              }
+           }
+      if(sec<=60)
+           {           
+           if(sec<10)
+               {
+               sec1=0;
+               sec2=sec;
+               }
+           else if(sec<60)
+               {
+               sec1=sec/10;
+               sec2=sec%10;
+               }
+           else 
+             {
+               mint++;
+               sec=0;
+             }
+           }
+      
+      if(mint<10)
+           {
+           mint1=0;
+           mint2=mint;
+           }
+       else if(mint<60)
+           {
+           mint1=mint/10;
+           mint2=mint%10;
+           }
+        int pos=110;
+       myGLCD.setFont(SevenSegNumFont);
+      myGLCD.printNumI(mint1,pos,100);
+      myGLCD.printNumI(mint2,pos+30,100);
+     
+      myGLCD.printNumI(sec1,pos+80,100);
+      myGLCD.printNumI(sec2,pos+110,100);
+    
+      myGLCD.printNumI(milsec1,pos+160,100);
+      myGLCD.printNumI(milsec2,pos+190,100);
+      myGLCD.printNumI(milsec3,pos+220,100);
+      myGLCD.printNumI(milsec4,pos+250,100);
+       
+                                           
+                      if(Serial.available())
+                          return;
+                       else i+=15;    
+     time1=millis();                 
+                      }       
+              }        
+              
+void intro1()
+    {
+      myGLCD.setBackColor(fsr, fsg, fsb);
+         myGLCD.fillScr(fsr, fsg, fsb);
+          myGLCD.setFont(BigFont);
+           myGLCD.print("AIHRO", CENTER, 110);
+           delay(3000);
+            myGLCD.setFont(SmallFont);
+             myGLCD.print("Artificial Intelligent Humanoid Robot", CENTER, 128);
+             delay(1000);
+    }
+       
+void introduction()
+      {
+        myGLCD.setColor(255,255,255);
+        myGLCD.setFont(BigFont);
+        myGLCD.print("AIHRo",CENTER,100);
+        delay(2000);
+         myGLCD.setFont(SmallFont);
+         myGLCD.print("Artificial Intelligent Humanoid Robot",CENTER,120);
+         delay(3000);
+         myGLCD.setColor(fsr,fsg,fsb);
+         myGLCD.fillRect(0,80,350,150);
+         myGLCD.setColor(7,183,237);
+        myGLCD.setFont(BigFont);
+        myGLCD.print("AIHRo",CENTER,20);
+        myGLCD.setFont(SmallFont);
+        myGLCD.print("Artificial Intelligent Humanoid Robot",CENTER,40);
+        delay(1000);
+          myGLCD.setColor(255,255,255);
+            myGLCD.print("Akhil Basil Baby (EEE)",20,70);  
+            delay(1000);     
+            myGLCD.print("Akhil Joy (EEE)",20,90);      
+            delay(1000);
+            myGLCD.print("Azim Ali (AE)",20,110);  
+            delay(1000);     
+            myGLCD.print("Jibin Poulose (EEE)",20,130);
+            delay(1000);
+                 
+       myGLCD.print("Guided by,",65,155);
+       myGLCD.print("Vibin C Thomas(Asst.prof)",85,175);
+       myGLCD.print("EEE ASIET,Kalady",CENTER,215);
+       delay(3000);
+   }
+   
+void screensaver()
+      { 
+     startss:   myGLCD.fillScr(0,0,0);
+         myGLCD.setColor (255,0,0);
+        for (int i=15; i<224; i+=5)
+        {
+          myGLCD.drawLine(1, i, (i*1.77)-10, 224);
+        }
+        myGLCD.setColor (255,0,0);
+        for (int i=224; i>15; i-=5)
+        {
+          myGLCD.drawLine(398, i, (i*1.77)-11, 15);
+        }
+        myGLCD.setColor (0,255,255);
+        for (int i=224; i>15; i-=5)
+        {
+          myGLCD.drawLine(1, i, 411-(i*1.77), 15);
+        }
+        myGLCD.setColor (0,255,255);
+        for (int i=15; i<224; i+=5)
+        {
+          myGLCD.drawLine(398, i, 410-(i*1.77), 224);
+        }
+       if(!Serial.available())
+           goto startss;
+        else 
+            {
+            myGLCD.setFont(BigFont);
+                  myGLCD.print("Temp °C",RIGHT,0);
+                  myGLCD.print("Hum   %",RIGHT,20); 
+                  myGLCD.setFont(SmallFont);
+                  myGLCD.print("AIHRo Group",RIGHT,225);
+                  myGLCD.setFont(BigFont);
+              return;
+            }
+      }
+  
