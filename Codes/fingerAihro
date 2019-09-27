@@ -1,0 +1,56 @@
+#include<Servo.h>
+
+Servo lft,ryt;
+char side,pos;
+
+void setup()
+{
+ Serial.begin(9600);
+delay(100); 
+lft.attach(12);
+ryt.attach(11);
+delay(100);
+lft.write(90);
+ryt.write(90);
+}
+
+void loop()
+{
+ 
+ while(!Serial.available());
+ side=Serial.read();
+ delay(100);
+ pos=Serial.read();
+ delay(100);
+ if((side=='1')&&(pos=='1'))
+     {
+      ryt.write(20);
+      delay(100);
+     }
+ 
+else if((side=='1')&&(pos=='8'))
+     {
+      ryt.write(180);
+      delay(100);
+     }
+     
+  else if((side=='2')&&(pos=='1'))
+     {
+      lft.write(20);
+      delay(100);
+     }
+     
+  else if((side=='2')&&(pos=='8'))
+     {
+      lft.write(180);
+      delay(100);
+     }
+  else if((side=='q')&&(pos=='q'))
+     {
+      lft.write(90);
+      ryt.write(90);
+      delay(100);
+     }
+}
+   
+     
