@@ -1,0 +1,265 @@
+/*        Program for Control Board in  AIHRo 
+          Created by AIHRo Group @ AIHRo Workspace
+          A R&D Productions
+          
+*/
+
+
+
+/*  
+              
+ MSP430 ICs address 
+     Controller       Address         Purpose
+     ----------       -------         -------
+          A              3        Left Hand Controller
+          B              4        Right Hand Controller
+          C              6        Finger and Leg motion Controller
+          
+ */
+
+
+#define LED RED_LED
+
+char inputSeq[10000],data[5],ch,deg;
+int seqcount=0,seqtimedif;
+long seqtimepre,seqtime;
+
+void setup()
+    {
+      Serial.begin(9600);
+      Serial3.begin(9600);
+      Serial4.begin(9600);
+      Serial7.begin(9600);
+      pinMode(LED, OUTPUT);  
+      pinMode(PE_0,OUTPUT);
+      
+      pinMode(A15,OUTPUT);      //Right
+      pinMode(32,OUTPUT);
+      pinMode(31,OUTPUT);
+      
+      pinMode(A14,OUTPUT);      //Left
+      pinMode(12,OUTPUT);
+      pinMode(11,OUTPUT);
+      digitalWrite(PE_0,HIGH);
+      Serial4.write("6");
+      delay(2000);
+      Serial4.write("1");
+      delay(2000);
+      Serial4.write("q");
+      delay(2000);
+     
+    }
+
+void loop()
+      {
+      getSequence();
+   
+      }
+       
+ 
+void getSequence()
+      {   
+       int gtsi=0,j=0;
+       
+       if(Serial.available())
+            {
+             while(Serial.available())
+                 {
+                 digitalWrite(LED, HIGH);
+                 // delay(100);              
+                 
+                  // delay(100); */
+//111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+                   ch=Serial.read();
+                    if(ch=='q')
+                          {
+                          Serial3.write("q");
+                          delay(1500);
+                          Serial4.write("q");
+                          delay(1500);
+                          Serial7.write("q");
+                          delay(10);
+                          Serial7.write("q");
+                          delay(1500);
+                          Serial.println("Finish"); 
+                            Serial.println("");  
+                           
+                          seqcount=0;                 
+                          digitalWrite(LED, LOW);  
+               //           return;
+                          }
+                     
+                    if(ch=='d')
+                          {
+                           char deg=Serial.read();                   
+                           Serial.print("Degree = ");
+                           Serial.println(deg);
+                           
+                           delay(10);
+                           Serial3.write("d");
+                           delay(10);
+                           Serial3.write(deg);
+                           
+                           delay(10);                           
+                           Serial4.write("d");
+                           delay(10);
+                           Serial4.write(deg);
+                           
+                           digitalWrite(LED, LOW);  
+                           } 
+                            //Serial.println("2");
+                  
+                      else  if((ch=='l')||(ch=='r')||(ch=='f')||(ch=='b'))
+                          {
+                          leg();
+                          }
+                      else if((ch=='1')||(ch=='2')||(ch=='3')||(ch=='4')||(ch=='5')||(ch=='6')||(ch=='7')||(ch=='8')||(ch=='9'))
+                            {
+                           data[0]=ch;
+                             for(j=1;j<4;j++)  
+                                 {  
+                                  if(Serial.available())
+                                       data[j]=Serial.read();
+                                  else 
+                                      {
+                                       digitalWrite(LED,LOW);
+                                       return;
+                                      }
+                                 delay(10);
+                                 }
+                             data[4]='\0';
+                             Serial.println("");
+                             for(int ih=0;ih<4;ih++)
+                                     Serial.print(data[ih]);
+                           
+                                  Serial.println("");
+                                  processSeq();   
+                                     digitalWrite(LED, LOW);      
+                                }
+                         else 
+                             {
+                             digitalWrite(LED, LOW);  
+                            return;
+                             } 
+
+//222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+                      }
+                      digitalWrite(LED,LOW);
+//11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+                     while(!Serial.available());
+                   
+                  
+                 }
+            
+      }   
+                  
+      
+void processSeq()
+    {     
+     
+   if((data[0]=='9')||(data[1]=='9')||(data[2]=='9')||(data[3]=='9'))
+       {
+         Serial.println("delay");
+        delay(1000);
+        return;
+       }
+    else if(((data[0]=='8')&&(data[3]=='8'))||((data[0]=='8')&&(data[3]=='1')))//data[0]=8 and data[3]=8  ==> s2 and s3 are pressed, so finger is opened
+        {
+         //Controller Address (7)
+         Serial7.write(data[1]);
+         Serial7.write(data[3]);
+         Serial.println("finger");
+         Serial.print("Send>>");
+         Serial.println(data[1]);
+         Serial.println("Send>>>");
+         Serial.println(data[2]);
+        delay(100);
+        }
+    else if((data[0]=='1')&&(data[1]=='2')) //1=Hand, 2=Left  ==> Left hand 
+        {
+         //Controller Address (3)
+         Serial3.write(data[2]);
+         Serial.println("left hand");
+         Serial.print("Send>>");
+         Serial.println(data[2]);
+        delay(100);
+        }
+    else if((data[0]=='1')&&(data[1]=='1')) //1=Hand, 1=Right  ==> Right hand 
+        {
+         //Controller Address (4)
+         Serial4.write(data[2]);
+         Serial.println("right hand");
+         Serial.print("Send>>");
+         Serial.println(data[2]);
+        delay(100);
+        }
+    else if(data[0]=='2')      //2==Leg ==>Leg Motion
+        {
+         leg();
+        }
+     
+     else Serial.println("invalid sequence");
+        
+ }
+ 
+ 
+ 
+void leg()
+      {
+       
+         Serial.print("Leg in direction ");
+          if((data[2]=='3')||(ch=='r'))
+             {
+              analogWrite(A14,255);
+              analogWrite(A15,255);
+              digitalWrite(32,LOW);
+              digitalWrite(12,HIGH);
+              Serial.println("Right");
+              delay(2000);
+             analogWrite(A15,0);
+             analogWrite(A14,0);
+             
+             }
+         else if((data[2]=='4')||(ch=='l'))
+             {
+               analogWrite(A14,255);
+              analogWrite(A15,255);
+              digitalWrite(32,HIGH);
+              digitalWrite(12,LOW);
+              Serial.println("Left");
+              delay(2000);
+             analogWrite(A15,0);
+             analogWrite(A14,0);
+             
+              }
+         else if((data[2]=='5')||(ch=='f'))
+             {
+               analogWrite(A14,255);
+              analogWrite(A15,255);
+              digitalWrite(32,LOW);
+              digitalWrite(12,LOW);
+              Serial.println("Forward");
+              delay(2000);
+             analogWrite(A15,0);
+             analogWrite(A14,0);
+             
+               }
+             
+        else if((data[2]=='6')||(ch=='b'))
+             {
+              analogWrite(A14,255);
+              analogWrite(A15,255);
+              digitalWrite(32,HIGH);
+              digitalWrite(12,HIGH);
+              Serial.println("Backward");
+             delay(2000);
+             analogWrite(A15,0);
+             analogWrite(A14,0);
+             }
+         else if((data[2]=='2')||(data[2]=='1'))
+             {
+              Serial.println("undefined");
+             }
+           delay(100);
+         
+      }
