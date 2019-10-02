@@ -21,4 +21,4 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 
 
 ## The Cerificate of appreciation from Texas instruments ##
-![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/TIIC-2015.png
+![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/TIIC-2015.png)
