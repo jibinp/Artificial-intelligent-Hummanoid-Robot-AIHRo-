@@ -24,7 +24,8 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/TIIC-2015.png)
 
 
-## Get into the Spirit of AIHRo ##
-[![Watch the video]](https://www.youtube.com/embed/e4UpsxuLVdQ)
+## Get into the Spirit of AIHRo ## [![Watch the video]](https://www.youtube.com/embed/e4UpsxuLVdQ)
 
-[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/T-D1KVIuvjA)
+## AIHRo in Action ## [![Watch the video]](https://www.youtube.com/embed/T2OffaLuMAk)
+
+## See the technical side of AIHRo ## https://www.youtube.com/embed/Ci-ox8ypSN4?list=PLZdijA6Eog24AbQCs4N7C8lgik7gkqYBd
