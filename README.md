@@ -31,4 +31,4 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 [![See the Action of AIHRo]](https://www.youtube.com/embed/T2OffaLuMAk)
 
 ## See the technical side of AIHRo ##   
-[![AIHRo Technical]https://www.youtube.com/embed/Ci-ox8ypSN4?list=PLZdijA6Eog24AbQCs4N7C8lgik7gkqYBd
+[![AIHRo Technical]] (https://www.youtube.com/embed/Ci-ox8ypSN4?list=PLZdijA6Eog24AbQCs4N7C8lgik7gkqYBd)
