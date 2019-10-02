@@ -17,3 +17,8 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 
 ## AIHRo, The full figure is here ##
 ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/Aihro-Basics.png)
+
+
+
+## The Cerificate of appreciation from Texas instruments ##
+![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/TIIC-2015.png
