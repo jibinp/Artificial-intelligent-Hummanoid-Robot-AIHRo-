@@ -12,3 +12,6 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 
 ## AIHRo, Pioneering the future robots ##
 ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/A10.jpg)
+
+## AIHRo, The full figure is here ##
+![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/Aihro-Basics.png)
