@@ -5,8 +5,8 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 ## Features of AIHRo ##
 ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/A11.jpg)
 
-## Mobile App that Control AIHRo##
-![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/Aihro-Mobile-App.jpg)
+## Mobile App that Control AIHRo ##
+    ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/Aihro-Mobile-App.jpg)
 
-## AIHRo, Pioneering the future robots##
+## AIHRo, Pioneering the future robots ##
 ![alt text](https://raw.githubusercontent.com/jibinp/Artificial-intelligent-Hummanoid-Robot-AIHRo-/master/Pics/A10.jpg)
