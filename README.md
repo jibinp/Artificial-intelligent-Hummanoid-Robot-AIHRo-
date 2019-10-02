@@ -25,7 +25,7 @@ An artificial intelligent robot possessed with a lot of functionalities. The rob
 
 
 ## Get into the Spirit of AIHRo ##  
-[![Watch the video]](https://www.youtube.com/embed/e4UpsxuLVdQ)
+[![## Get into the Spirit of AIHRo ## ]](https://www.youtube.com/embed/e4UpsxuLVdQ)
 
 ## AIHRo in Action ##  
 [![Watch the video]](https://www.youtube.com/embed/T2OffaLuMAk)
